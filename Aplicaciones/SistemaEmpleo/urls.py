@@ -1,9 +1,7 @@
-from django.contrib import admin
 from django.urls import path
 from Aplicaciones.SistemaEmpleo import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('', views.home, name='home'),
 
     path('login-buscador/', views.login_buscador, name='login_buscador'),
