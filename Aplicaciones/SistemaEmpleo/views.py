@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
-from .models import Usuario
+from .models import Usuario, Buscador, Empresa
+from django.core.mail import send_mail
+
 
 # Pantalla de inicio
 def home(request):
@@ -33,35 +35,82 @@ def login_empresa(request):
 
     return render(request, 'login_empresa.html')
 
-# Registro buscador
+
+
 def registro_buscador(request):
     if request.method == 'POST':
         usuario = request.POST['usuario']
         clave = request.POST['clave']
+        cedula = request.POST['cedula']
+        apellido = request.POST['apellido']
+        fecha = request.POST['fecha']
+        genero = request.POST['genero']
+        correo = request.POST['correo']
 
         if Usuario.objects.filter(usuario=usuario).exists():
             return render(request, 'registro_buscador.html', {'error': 'El usuario ya existe'})
 
-        Usuario.objects.create(usuario=usuario, clave=clave, tipo_usuario='buscador')
+        user = Usuario.objects.create(usuario=usuario, clave=clave, tipo_usuario='buscador')
+
+        Buscador.objects.create(
+            usuario=user,
+            cedula=cedula,
+            apellido=apellido,
+            fecha_nacimiento=fecha,
+            genero=genero,
+            correo=correo
+        )
+
+        # Enviar correo
+        send_mail(
+            'Registro exitoso en Sistema de Empleo',
+            f'Bienvenido {usuario}, tus credenciales son:\nUsuario: {usuario}\nContraseña: {clave}',
+            'tucorreo@gmail.com',
+            [correo],
+            fail_silently=False,
+        )
+
         return redirect('login_buscador')
 
     return render(request, 'registro_buscador.html')
 
-# Registro empresa
+from .models import Usuario, Empresa
+
 def registro_empresa(request):
     if request.method == 'POST':
         usuario = request.POST['usuario']
         clave = request.POST['clave']
+        nombre = request.POST['nombre']
+        actividad = request.POST['actividad']
+        razon = request.POST['razon']
+        correo = request.POST['correo']
 
         if Usuario.objects.filter(usuario=usuario).exists():
             return render(request, 'registro_empresa.html', {'error': 'El usuario ya existe'})
 
-        Usuario.objects.create(usuario=usuario, clave=clave, tipo_usuario='empresa')
+        user = Usuario.objects.create(usuario=usuario, clave=clave, tipo_usuario='empresa')
+
+        Empresa.objects.create(
+            usuario=user,
+            nombre_comercial=nombre,
+            actividad_economica=actividad,
+            razon_social=razon,
+            correo=correo
+        )
+
+        # Enviar correo
+        send_mail(
+            'Registro exitoso en Sistema de Empleo',
+            f'Bienvenido {usuario}, tus credenciales son:\nUsuario: {usuario}\nContraseña: {clave}',
+            'tucorreo@gmail.com',
+            [correo],
+            fail_silently=False,
+        )
+
         return redirect('login_empresa')
 
     return render(request, 'registro_empresa.html')
 
-# Inicio buscador
 def inicio_buscador(request):
     return render(request, 'inicio_buscador.html')
 

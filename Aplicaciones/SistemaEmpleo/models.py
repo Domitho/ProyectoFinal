@@ -15,6 +15,7 @@ class Usuario(models.Model):
 
 class Buscador(models.Model):
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
+    nombre = models.CharField(max_length=50)
     cedula = models.CharField(max_length=15)
     apellido = models.CharField(max_length=50)
     fecha_nacimiento = models.DateField()
@@ -27,10 +28,16 @@ class Buscador(models.Model):
 
 class Empresa(models.Model):
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
+    cedula = models.CharField(max_length=15)
     nombre_comercial = models.CharField(max_length=100)
     actividad_economica = models.CharField(max_length=100)
+    tipo_persona = models.CharField(max_length=20)
     razon_social = models.CharField(max_length=100)
     correo = models.EmailField()
+    provincia = models.CharField(max_length=50)
+    ciudad = models.CharField(max_length=50)
+    calle = models.CharField(max_length=50)
+    celular = models.CharField(max_length=15)
 
     def __str__(self):
         return self.usuario.usuario
