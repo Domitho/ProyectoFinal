@@ -1,0 +1,47 @@
+{% extends 'plantilla.html' %}
+
+{% block contenido %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card mt-5 shadow">
+            <div class="card-header text-white bg-secondary text-center">
+                <h4>Registro Empresa</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="usuario" class="form-label">Usuario</label>
+                        <input type="text" class="form-control" id="usuario" name="usuario" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="clave" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="clave" name="clave" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre Comercial</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="actividad" class="form-label">Actividad Económica</label>
+                        <input type="text" class="form-control" id="actividad" name="actividad" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="razon" class="form-label">Razón Social</label>
+                        <input type="text" class="form-control" id="razon" name="razon" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="correo" class="form-label">Correo Electrónico</label>
+                        <input type="email" class="form-control" id="correo" name="correo" required>
+                    </div>
+                    <button type="submit" class="btn btn-secondary w-100">Registrarse</button>
+                </form>
+
+                {% if error %}
+                    <div class="alert alert-danger mt-3 text-center">{{ error }}</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

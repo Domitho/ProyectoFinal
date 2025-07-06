@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect
 from .models import Usuario
 
-# Página de inicio pública
+# Pantalla de inicio
 def home(request):
     return render(request, 'home.html')
 
-# Login para buscadores
+# Login buscador
 def login_buscador(request):
     if request.method == 'POST':
         usuario = request.POST['usuario']
@@ -19,7 +19,7 @@ def login_buscador(request):
 
     return render(request, 'login_buscador.html')
 
-# Login para empresas
+# Login empresa
 def login_empresa(request):
     if request.method == 'POST':
         usuario = request.POST['usuario']
@@ -33,20 +33,33 @@ def login_empresa(request):
 
     return render(request, 'login_empresa.html')
 
-# Registro
-def registro_view(request):
+# Registro buscador
+def registro_buscador(request):
     if request.method == 'POST':
         usuario = request.POST['usuario']
         clave = request.POST['clave']
-        tipo_usuario = request.POST['tipo_usuario']
 
         if Usuario.objects.filter(usuario=usuario).exists():
-            return render(request, 'registro.html', {'error': 'El usuario ya existe'})
+            return render(request, 'registro_buscador.html', {'error': 'El usuario ya existe'})
 
-        Usuario.objects.create(usuario=usuario, clave=clave, tipo_usuario=tipo_usuario)
-        return redirect('home')
+        Usuario.objects.create(usuario=usuario, clave=clave, tipo_usuario='buscador')
+        return redirect('login_buscador')
 
-    return render(request, 'registro.html')
+    return render(request, 'registro_buscador.html')
+
+# Registro empresa
+def registro_empresa(request):
+    if request.method == 'POST':
+        usuario = request.POST['usuario']
+        clave = request.POST['clave']
+
+        if Usuario.objects.filter(usuario=usuario).exists():
+            return render(request, 'registro_empresa.html', {'error': 'El usuario ya existe'})
+
+        Usuario.objects.create(usuario=usuario, clave=clave, tipo_usuario='empresa')
+        return redirect('login_empresa')
+
+    return render(request, 'registro_empresa.html')
 
 # Inicio buscador
 def inicio_buscador(request):
