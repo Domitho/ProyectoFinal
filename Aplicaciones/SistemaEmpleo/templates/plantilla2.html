@@ -6,6 +6,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Replica NavBar</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         /* Reset and base */
         body {
@@ -119,7 +126,7 @@
         <div class="nav-container">
             <div class="nav-top">
                 <div class="nav-logo" aria-label="Logo y texto accciontrabajo">
-                    <a href="#" aria-label="Accciontrabajo logo">
+                    <a href="/" aria-label="Accciontrabajo logo">
                         acccion<span>trabajo</span>
                     </a>
                     <div class="nav-subtitle">Red profesional | Ecuador</div>
@@ -159,5 +166,42 @@
             </div>
         </div>
     </nav>
+
+    <div class="container mt-4">
+        {% block contenido %}
+        {% endblock %}
+    </div>
+
+        <footer class="bg-dark text-white mt-4 py-4">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <img height="80" src="https://previews.123rf.com/images/paylessimages/paylessimages1502/paylessimages150204452/46823962-observaci%C3%B3n-astron%C3%B3mica.jpg" />
+                </div>
+                <div class="col-md-4">
+                    <h5>Desarrollado por:</h5>
+                    <strong>Domenica Toaquiza</strong>
+                </div>
+                <div class="col-md-4">
+                    <h5>Latacunga</h5>
+                    <small>Año 2025</small>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    {% if messages %}
+        {% for mensaje in messages %}
+            <script>
+                Swal.fire({
+                    title: "Mensaje",
+                    text: "{{ mensaje }}",
+                    icon: "success",
+                    confirmButtonColor: "#198754"
+                });
+            </script>
+        {% endfor %}
+    {% endif %}
+
 </body>
 </html>
