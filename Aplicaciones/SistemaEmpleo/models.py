@@ -12,7 +12,6 @@ class Usuario(models.Model):
     def __str__(self):
         return f'{self.usuario} - {self.get_tipo_usuario_display()}'
 
-
 class Buscador(models.Model):
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=50)
@@ -24,7 +23,6 @@ class Buscador(models.Model):
 
     def __str__(self):
         return self.usuario.usuario
-
 
 class Empresa(models.Model):
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
