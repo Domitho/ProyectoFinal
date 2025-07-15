@@ -104,6 +104,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <!--
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'login_buscador' %}"><i class="fas fa-search me-1"></i> Buscar
                             Empleos</a>
@@ -112,18 +113,37 @@
                         <a class="nav-link" href="{% url 'login_empresa' %}"><i class="fas fa-upload me-1"></i> Publicar
                             Empleos</a>
                     </li>
+                    -->
+                    <li class="nav-item">
+                        <a href="" class="nav-link">Acerca de nosotros</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" class="nav-link">Contactos</a>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarUser" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-user me-1"></i> Usuario
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarUser">
-                            <li><a class="dropdown-item" href="#">Perfil</a></li>
-                            <li><a class="dropdown-item" href="#">Mis Solicitudes</a></li>
+                            <li>
+                                <a href="{% url 'login_empresa' %}" class="dropdown-item" href="#">Iniciar Sesion
+                                    Admin</a>
+                            </li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
+                            <li>
+                                <a href="{% url 'login_buscador' %}" class="dropdown-item" href="#">Iniciar Sesion
+                                    User</a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="#">Registrarse</a></li>
+                            <!--
                             <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
+                            -->
                         </ul>
                     </li>
                 </ul>
