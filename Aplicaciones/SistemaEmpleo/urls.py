@@ -2,7 +2,7 @@ from django.urls import path
 from Aplicaciones.SistemaEmpleo import views
 
 urlpatterns = [
-    path('', views.home, name='home'),
+    path('home', views.home, name='home'),
 
     path('login-buscador/', views.login_buscador, name='login_buscador'),
     path('login-empresa/', views.login_empresa, name='login_empresa'),
