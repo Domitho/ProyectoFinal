@@ -2,7 +2,7 @@ import random
 import string
 from django.shortcuts import render, redirect
 from django.core.mail import send_mail
-from .models import Usuario, Buscador, Empresa
+from .models import Usuario, Buscador, Empresa, ActividadEconomica
 
 # Funciones para generar credenciales automáticas
 def generar_usuario(nombre, apellido):
@@ -85,10 +85,12 @@ def registro_buscador(request):
 
 # Registro de empresa
 def registro_empresa(request):
+    actividades = ActividadEconomica.objects.filter(esta_activa=True)
+
     if request.method == 'POST':
         cedula = request.POST['cedula']
         nombre_comercial = request.POST['nombre']
-        actividad = request.POST['actividad']
+        actividad_id = request.POST['actividad']
         tipo_persona = request.POST['persona']
         razon = request.POST['razon']
         correo = request.POST['correo']
@@ -96,6 +98,8 @@ def registro_empresa(request):
         ciudad = request.POST['ciudad']
         calle = request.POST['calle']
         celular = request.POST['celular']
+
+        actividad_obj = ActividadEconomica.objects.get(id=actividad_id)
 
         usuario_gen = generar_usuario(nombre_comercial.split()[0], razon.split()[0])
         clave_gen = generar_contraseña()
@@ -106,7 +110,7 @@ def registro_empresa(request):
             usuario=user,
             cedula=cedula,
             nombre_comercial=nombre_comercial,
-            actividad_economica=actividad,
+            actividad_economica=actividad_obj,
             tipo_persona=tipo_persona,
             razon_social=razon,
             correo=correo,
@@ -126,7 +130,7 @@ def registro_empresa(request):
 
         return redirect('login_empresa')
 
-    return render(request, 'registro_empresa.html')
+    return render(request, 'registro_empresa.html', {'actividades': actividades})
 
 # Inicio buscador
 def inicio_buscador(request):

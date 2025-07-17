@@ -24,11 +24,22 @@ class Buscador(models.Model):
     def __str__(self):
         return self.usuario.usuario
 
+# ACTIVIDAD ECONOMICA
+class ActividadEconomica(models.Model):
+    codigo = models.CharField(max_length=10, unique=True)
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField(blank=True)
+    esta_activa = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.codigo} - {self.nombre}"
+
+
 class Empresa(models.Model):
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
     cedula = models.CharField(max_length=15)
     nombre_comercial = models.CharField(max_length=100)
-    actividad_economica = models.CharField(max_length=100)
+    actividad_economica = models.ForeignKey(ActividadEconomica, on_delete=models.PROTECT)
     tipo_persona = models.CharField(max_length=20)
     razon_social = models.CharField(max_length=100)
     correo = models.EmailField()
@@ -39,3 +50,4 @@ class Empresa(models.Model):
 
     def __str__(self):
         return self.usuario.usuario
+

@@ -22,23 +22,9 @@
                         <label for="actividad" class="form-label">Actividad Económica</label>
                         <select class="form-select" id="actividad" name="actividad" required>
                             <option value="">Seleccionar</option>
-                            <option>ACTIVIDADES COMUNITARIAS</option>
-                            <option>ACTIVIDADES DE SALUD</option>
-                            <option>ACTIVIDADES TIPO SERVICIOS</option>
-                            <option>AGRICULTURA Y PLANTACIONES</option>
-                            <option>ARTESANIAS</option>
-                            <option>CONSTRUCCIÓN</option>
-                            <option>ENSEÑANZA</option>
-                            <option>METALMECÁNICA</option>
-                            <option>MINAS, CANTERAS Y YACIMIENTOS</option>
-                            <option>PESCA, ACUICULTURA Y MARICULTURA</option>
-                            <option>PRODUCCIÓN PECAURIA</option>
-                            <option>PRODUCTOS INDUSTRIALES</option>
-                            <option>SERVICIOS FINANCIEROS</option>
-                            <option>TECNOLOGÍA (INCLUYE TICS)</option>
-                            <option>TRANSFORMACIÓN DE ALIMENTOS</option>
-                            <option>TURISMO Y ALIMENTACIÓN</option>
-                            <option>TRANSPORTE Y LOGÍSTICA</option>
+                            {% for a in actividades %}
+                                <option value="{{ a.id }}">{{ a.nombre }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="mb-3">
