@@ -23,11 +23,13 @@ def login_buscador(request):
 
         try:
             user = Usuario.objects.get(usuario=usuario, clave=clave, tipo_usuario='buscador')
+            request.session['usuario_id'] = user.id  # Guardamos el usuario en sesión
             return redirect('inicio_buscador')
         except Usuario.DoesNotExist:
             return render(request, 'login_buscador.html', {'error': 'Usuario o clave incorrectos'})
 
     return render(request, 'login_buscador.html')
+
 
 # Login para empresas
 def login_empresa(request):
@@ -37,6 +39,7 @@ def login_empresa(request):
 
         try:
             user = Usuario.objects.get(usuario=usuario, clave=clave, tipo_usuario='empresa')
+            request.session['usuario_id'] = user.id  # Guardamos el usuario en sesión
             return redirect('inicio_empresa')
         except Usuario.DoesNotExist:
             return render(request, 'login_empresa.html', {'error': 'Usuario o clave incorrectos'})
@@ -127,8 +130,26 @@ def registro_empresa(request):
 
 # Inicio buscador
 def inicio_buscador(request):
-    return render(request, 'inicio_buscador.html')
+    usuario = None
+    if 'usuario_id' in request.session:
+        try:
+            usuario = Usuario.objects.get(id=request.session['usuario_id'])
+        except Usuario.DoesNotExist:
+            pass
+    return render(request, 'inicio_buscador.html', {'usuario': usuario})
+
 
 # Inicio empresa
 def inicio_empresa(request):
-    return render(request, 'inicio_empresa.html')
+    usuario = None
+    if 'usuario_id' in request.session:
+        try:
+            usuario = Usuario.objects.get(id=request.session['usuario_id'])
+        except Usuario.DoesNotExist:
+            pass
+    return render(request, 'inicio_empresa.html', {'usuario': usuario})
+
+# CERRAR SESION
+def logout_usuario(request):
+    request.session.flush()
+    return redirect('home')

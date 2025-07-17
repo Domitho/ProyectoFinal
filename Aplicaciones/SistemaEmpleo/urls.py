@@ -12,4 +12,6 @@ urlpatterns = [
 
     path('inicio-buscador/', views.inicio_buscador, name='inicio_buscador'),
     path('inicio-empresa/', views.inicio_empresa, name='inicio_empresa'),
+
+    path('logout/', views.logout_usuario, name='logout'),
 ]
