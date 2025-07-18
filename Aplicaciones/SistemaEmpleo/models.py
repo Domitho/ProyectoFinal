@@ -24,7 +24,6 @@ class Buscador(models.Model):
     def __str__(self):
         return self.usuario.usuario
 
-# ACTIVIDAD ECONOMICA
 class ActividadEconomica(models.Model):
     codigo = models.CharField(max_length=10, unique=True)
     nombre = models.CharField(max_length=100)
@@ -33,7 +32,6 @@ class ActividadEconomica(models.Model):
 
     def __str__(self):
         return f"{self.codigo} - {self.nombre}"
-
 
 class Empresa(models.Model):
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
