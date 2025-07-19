@@ -310,85 +310,37 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    {% for empleo in empleos %}
                                                     <tr>
                                                         <td>
                                                             <div class="d-flex align-items-center">
-                                                                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/063004f1-ff5b-4e63-8946-65fdf3d3c208.png"
-                                                                    alt="Logo de Innovatech con diseño minimalista en verde"
-                                                                    class="rounded me-2" width="30">
-                                                                <strong>Diseñador UX/UI</strong>
+                                                                <img src="https://cdn-icons-png.flaticon.com/512/3064/3064726.png" alt="icono" class="rounded me-2" width="30">
+                                                                <strong>{{ empleo.titulo }}</strong>
                                                             </div>
                                                         </td>
-                                                        <td>Innovatech</td>
-                                                        <td>20/10/2023</td>
-                                                        <td><span class="badge bg-primary">En revisión</span></td>
+                                                        <td>{{ empleo.empresa.nombre_comercial }}</td>
+                                                        <td>{{ empleo.fecha_publicacion|date:"d/m/Y" }}</td>
                                                         <td>
-                                                            <button
-                                                                class="btn btn-sm btn-outline-primary me-1 btn-hover"
-                                                                data-bs-toggle="tooltip" title="Ver detalles">
+                                                            {% if empleo.esta_activa %}
+                                                                <span class="badge bg-success">Activa</span>
+                                                            {% else %}
+                                                                <span class="badge bg-secondary">Inactiva</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            <a href="#" class="btn btn-sm btn-outline-primary me-1" title="Ver">
                                                                 <i class="fas fa-eye"></i>
-                                                            </button>
-                                                            <button class="btn btn-sm btn-outline-secondary"><i
-                                                                    class="fas fa-ellipsis-v"></i></button>
+                                                            </a>
+                                                            <a href="#" class="btn btn-sm btn-outline-secondary" title="Opciones">
+                                                                <i class="fas fa-ellipsis-v"></i>
+                                                            </a>
                                                         </td>
                                                     </tr>
+                                                    {% empty %}
                                                     <tr>
-                                                        <td>
-                                                            <div class="d-flex align-items-center">
-                                                                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/b38284a2-71c4-496d-9228-2675d9924e9c.png"
-                                                                    alt="Logo de DataWorld en tonos azules con símbolo de globo terráqueo"
-                                                                    class="rounded me-2" width="30">
-                                                                <strong>Analista de Datos</strong>
-                                                            </div>
-                                                        </td>
-                                                        <td>DataWorld</td>
-                                                        <td>18/10/2023</td>
-                                                        <td><span class="badge bg-warning">Entrevista</span></td>
-                                                        <td>
-                                                            <button class="btn btn-sm btn-outline-primary me-1"><i
-                                                                    class="fas fa-eye"></i></button>
-                                                            <button class="btn btn-sm btn-outline-secondary"><i
-                                                                    class="fas fa-ellipsis-v"></i></button>
-                                                        </td>
+                                                        <td colspan="5" class="text-center text-muted">No hay publicaciones aún.</td>
                                                     </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <div class="d-flex align-items-center">
-                                                                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/190bc78f-08eb-4f34-a2ff-705bf46d11da.png"
-                                                                    alt="Logo de CloudSys con diseño de nube en gradiente morado"
-                                                                    class="rounded me-2" width="30">
-                                                                <strong>Ingeniero DevOps</strong>
-                                                            </div>
-                                                        </td>
-                                                        <td>CloudSys</td>
-                                                        <td>15/10/2023</td>
-                                                        <td><span class="badge bg-success">Activa</span></td>
-                                                        <td>
-                                                            <button class="btn btn-sm btn-outline-primary me-1"><i
-                                                                    class="fas fa-eye"></i></button>
-                                                            <button class="btn btn-sm btn-outline-secondary"><i
-                                                                    class="fas fa-ellipsis-v"></i></button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <div class="d-flex align-items-center">
-                                                                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/572683e7-ba82-4f82-a93f-4592bf3fe5f9.png"
-                                                                    alt="Logo de MarketPro en rojo con ícono de gráfico ascendente"
-                                                                    class="rounded me-2" width="30">
-                                                                <strong>Especialista en Marketing</strong>
-                                                            </div>
-                                                        </td>
-                                                        <td>MarketPro</td>
-                                                        <td>12/10/2023</td>
-                                                        <td><span class="badge bg-danger">Urgente</span></td>
-                                                        <td>
-                                                            <button class="btn btn-sm btn-outline-primary me-1"><i
-                                                                    class="fas fa-eye"></i></button>
-                                                            <button class="btn btn-sm btn-outline-secondary"><i
-                                                                    class="fas fa-ellipsis-v"></i></button>
-                                                        </td>
-                                                    </tr>
+                                                    {% endfor %}
                                                 </tbody>
                                             </table>
                                         </div>

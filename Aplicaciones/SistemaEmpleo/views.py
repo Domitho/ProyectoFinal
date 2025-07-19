@@ -2,7 +2,8 @@ import random
 import string
 from django.shortcuts import render, redirect
 from django.core.mail import send_mail
-from .models import Usuario, Buscador, Empresa, ActividadEconomica
+from .models import Usuario, Buscador, Empresa, ActividadEconomica, Publicarempleo
+from django.utils import timezone
 
 # Funciones para generar credenciales automáticas
 def generar_usuario(nombre, apellido):
@@ -146,12 +147,18 @@ def inicio_buscador(request):
 # Inicio empresa
 def inicio_empresa(request):
     usuario = None
+    empleos = []
     if 'usuario_id' in request.session:
         try:
-            usuario = Usuario.objects.get(id=request.session['usuario_id'])
-        except Usuario.DoesNotExist:
+            usuario = Usuario.objects.get(id=request.session['usuario_id'], tipo_usuario='empresa')
+            empresa = Empresa.objects.get(usuario=usuario)
+            empleos = Publicarempleo.objects.filter(empresa=empresa).order_by('-fecha_publicacion')
+        except (Usuario.DoesNotExist, Empresa.DoesNotExist):
             pass
-    return render(request, 'inicio_empresa.html', {'usuario': usuario})
+    return render(request, 'inicio_empresa.html', {
+        'usuario': usuario,
+        'empleos': empleos
+    })
 
 # CERRAR SESION
 def logout_usuario(request):
@@ -160,10 +167,6 @@ def logout_usuario(request):
 
 
 ## REGISTRAR EMPLEOS ##
-
-from .models import Publicarempleo, Empresa, Usuario
-from django.utils import timezone
-from django.shortcuts import render, redirect
 
 def registrar_empleo(request):
     if 'usuario_id' not in request.session:
