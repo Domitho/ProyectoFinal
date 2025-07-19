@@ -14,4 +14,7 @@ urlpatterns = [
     path('inicio-empresa/', views.inicio_empresa, name='inicio_empresa'),
 
     path('logout/', views.logout_usuario, name='logout'),
+
+    # URL REGISTRAR EMPLEO
+    path('registrar-empleo/', views.registrar_empleo, name='registrar_empleo'),
 ]

@@ -157,3 +157,47 @@ def inicio_empresa(request):
 def logout_usuario(request):
     request.session.flush()
     return redirect('home')
+
+
+## REGISTRAR EMPLEOS ##
+
+from .models import Publicarempleo, Empresa, Usuario
+from django.utils import timezone
+from django.shortcuts import render, redirect
+
+def registrar_empleo(request):
+    if 'usuario_id' not in request.session:
+        return redirect('login_empresa')  # ← CORREGIDO AQUÍ
+
+    try:
+        usuario = Usuario.objects.get(id=request.session['usuario_id'], tipo_usuario='empresa')
+        empresa = Empresa.objects.get(usuario=usuario)
+    except (Usuario.DoesNotExist, Empresa.DoesNotExist):
+        return render(request, 'error.html', {'mensaje': 'No estás autorizado para publicar empleos.'})
+
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo')
+        descripcion = request.POST.get('descripcion')
+        requisitos = request.POST.get('requisitos')
+        salario = request.POST.get('salario') or None
+        tipo_contrato = request.POST.get('tipo_contrato')
+        modalidad = request.POST.get('modalidad')
+        ciudad = request.POST.get('ciudad')
+        fecha_vencimiento = request.POST.get('fecha_vencimiento')
+
+        Publicarempleo.objects.create(
+            empresa=empresa,
+            titulo=titulo,
+            descripcion=descripcion,
+            requisitos=requisitos,
+            salario=salario,
+            tipo_contrato=tipo_contrato,
+            modalidad=modalidad,
+            ciudad=ciudad,
+            fecha_publicacion=timezone.now().date(),
+            fecha_vencimiento=fecha_vencimiento,
+            esta_activa=True
+        )
+        return redirect('inicio_empresa')  # O una URL de listado que quieras
+
+    return render(request, 'registrar_empleo.html')
