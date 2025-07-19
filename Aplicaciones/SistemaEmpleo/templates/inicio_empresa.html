@@ -191,14 +191,14 @@
         </div>
 
         <!-- Stats Cards -->
-        <div class="row mb-4">
+        <div class="row mb-4 justify-content-center">
             <div class="col-md-3">
                 <div class="card text-white bg-primary mb-3">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h6 class="card-title">Total Solicitudes</h6>
-                                <h2 class="card-text counter" data-target="42">0</h2>
+                                <h2 class="card-text">{{ total }}</h2>
                             </div>
                             <i class="fas fa-file-alt fa-3x"></i>
                         </div>
@@ -210,8 +210,8 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="card-title">En Proceso</h6>
-                                <h2 class="card-text">15</h2>
+                                <h6 class="card-title">Activas</h6>
+                                <h2 class="card-text">{{ activas }}</h2>
                             </div>
                             <i class="fas fa-tasks fa-3x"></i>
                         </div>
@@ -223,23 +223,10 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="card-title">Entrevistas</h6>
-                                <h2 class="card-text">8</h2>
+                                <h6 class="card-title">Inactivas</h6>
+                                <h2 class="card-text">{{ inactivas }}</h2>
                             </div>
                             <i class="fas fa-handshake fa-3x"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-white bg-danger mb-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="card-title">Urgentes</h6>
-                                <h2 class="card-text">3</h2>
-                            </div>
-                            <i class="fas fa-exclamation-triangle fa-3x"></i>
                         </div>
                     </div>
                 </div>
@@ -249,52 +236,14 @@
         <!-- Job Applications List -->
         <div class="row">
             <div class="col-md-12">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h3>Solicitudes Recientes</h3>
-                    <div class="btn-group">
-                        <button class="btn btn-outline-secondary active">Todo</button>
-                        <button class="btn btn-outline-secondary">Activas</button>
-                        <button class="btn btn-outline-secondary">Archivadas</button>
-                    </div>
-                </div>
-
-                <!-- Application Cards -->
-                <div class="list-group">
-                    <!-- Urgent Application -->
-                    <div class="list-group-item job-card urgent mb-3">
-                        <div class="row align-items-center">
-                            <div class="col-md-1">
-                                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/2c4fb956-e1a1-4a9f-8e4e-392428d282b8.png"
-                                    alt="Logo de empresa TechCorp con fondo azul y letras blancas" class="company-logo">
-                            </div>
-                            <div class="col-md-5">
-                                <h5>Desarrollador Full Stack</h5>
-                                <span class="text-muted">TechCorp</span>
-                                <span class="badge badge-urgent text-white ms-2">Urgente</span>
-                                <div class="mt-2">
-                                    <span class="job-type-tag bg-info text-white me-2">Remoto</span>
-                                    <span class="job-type-tag bg-secondary text-white">Tiempo Completo</span>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div><i class="fas fa-calendar me-2"></i>Postulado: 15/10/2023</div>
-                                <div><i class="fas fa-clock me-2"></i>Siguiente paso: Entrevista técnica</div>
-                            </div>
-                            <div class="col-md-3 text-end">
-                                <button class="btn btn-sm btn-outline-primary meIniciar sesión</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Recent Applications Table -->
                 <div class=" card mt-4">
                                     <div class="card-header bg-white">
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-0">Últimas solicitudes</h5>
-                                            <button class="btn btn-sm btn-outline-secondary">
-                                                <i class="fas fa-download me-1"></i>Exportar
-                                            </button>
+                                            <h5 class="mb-0">Publicaciones de empleos</h5>
+                                            <a class="btn btn-sm btn-outline-secondary" href="{% url 'registrar_empleo' %}">
+                                                <i class="fas fa-add me-1"></i>Agregar
+                                            </a>
                                         </div>
                                     </div>
                                     <div class="card-body">
@@ -305,6 +254,7 @@
                                                         <th>Puesto</th>
                                                         <th>Empresa</th>
                                                         <th>Fecha</th>
+                                                        <th>Salario</th>
                                                         <th>Estado</th>
                                                         <th>Acciones</th>
                                                     </tr>
@@ -320,11 +270,12 @@
                                                         </td>
                                                         <td>{{ empleo.empresa.nombre_comercial }}</td>
                                                         <td>{{ empleo.fecha_vencimiento|date:"d/m/Y" }}</td>
+                                                        <td>{{ empleo.salario }}</td>
                                                         <td>
                                                             {% if empleo.esta_activa %}
-                                                                <span class="badge bg-success">Activa</span>
+                                                            <span class="badge bg-success">Activa</span>
                                                             {% else %}
-                                                                <span class="badge bg-secondary">Inactiva</span>
+                                                            <span class="badge bg-secondary">Inactiva</span>
                                                             {% endif %}
                                                         </td>
                                                         <td>

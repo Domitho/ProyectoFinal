@@ -33,7 +33,7 @@
 
                 <div class="mb-3">
                     <label class="form-label">Salario (opcional)</label>
-                    <input type="number" name="salario" step="0.01" class="form-control" value="{{ empleo.salario }}">
+                    <input type="text" name="salario" step="0.01" class="form-control" value="{{ empleo.salario|default_if_none:'' }}">
                 </div>
 
                 <div class="mb-3">

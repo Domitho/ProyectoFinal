@@ -1,3 +1,4 @@
+from decimal import Decimal, InvalidOperation
 import random
 import string
 from django.shortcuts import render, redirect
@@ -148,16 +149,27 @@ def inicio_buscador(request):
 def inicio_empresa(request):
     usuario = None
     empleos = []
+    total = activas = inactivas = 0
+
     if 'usuario_id' in request.session:
         try:
             usuario = Usuario.objects.get(id=request.session['usuario_id'], tipo_usuario='empresa')
             empresa = Empresa.objects.get(usuario=usuario)
-            empleos = Publicarempleo.objects.filter(empresa=empresa).order_by('-fecha_publicacion')
+            empleos = Publicarempleo.objects.filter(empresa=empresa)
+
+            total = empleos.count()
+            activas = empleos.filter(esta_activa=True).count()
+            inactivas = empleos.filter(esta_activa=False).count()
+
         except (Usuario.DoesNotExist, Empresa.DoesNotExist):
             pass
+
     return render(request, 'inicio_empresa.html', {
         'usuario': usuario,
-        'empleos': empleos
+        'empleos': empleos,
+        'total': total,
+        'activas': activas,
+        'inactivas': inactivas
     })
 
 # CERRAR SESION
@@ -217,12 +229,24 @@ def editar_empleo(request, id):
         empleo.titulo = request.POST.get('titulo')
         empleo.descripcion = request.POST.get('descripcion')
         empleo.requisitos = request.POST.get('requisitos')
-        empleo.salario = request.POST.get('salario') or None
         empleo.tipo_contrato = request.POST.get('tipo_contrato')
         empleo.modalidad = request.POST.get('modalidad')
         empleo.ciudad = request.POST.get('ciudad')
         empleo.fecha_vencimiento = request.POST.get('fecha_vencimiento')
-        empleo.esta_activa = request.POST.get('esta_activa') == 'True' 
+        empleo.esta_activa = request.POST.get('esta_activa') == 'True'
+
+        salario_str = request.POST.get('salario')
+        if salario_str:
+            try:
+                empleo.salario = Decimal(salario_str.replace(',', '.'))
+            except InvalidOperation:
+                return render(request, 'empresa/editar_empleo.html', {
+                    'empleo': empleo,
+                    'error': 'El valor de salario no es válido.'
+                })
+        else:
+            empleo.salario = None
+
         empleo.save()
         return redirect('inicio_empresa')
 
