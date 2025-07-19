@@ -204,3 +204,49 @@ def registrar_empleo(request):
         return redirect('inicio_empresa')  # O una URL de listado que quieras
 
     return render(request, 'registrar_empleo.html')
+
+def editar_empleo(request, id):
+    try:
+        usuario = Usuario.objects.get(id=request.session['usuario_id'], tipo_usuario='empresa')
+        empresa = Empresa.objects.get(usuario=usuario)
+        empleo = Publicarempleo.objects.get(id=id, empresa=empresa)
+    except (Usuario.DoesNotExist, Empresa.DoesNotExist, Publicarempleo.DoesNotExist):
+        return render(request, 'error.html', {'mensaje': 'Empleo no encontrado o acceso denegado.'})
+
+    if request.method == 'POST':
+        empleo.titulo = request.POST.get('titulo')
+        empleo.descripcion = request.POST.get('descripcion')
+        empleo.requisitos = request.POST.get('requisitos')
+        empleo.salario = request.POST.get('salario') or None
+        empleo.tipo_contrato = request.POST.get('tipo_contrato')
+        empleo.modalidad = request.POST.get('modalidad')
+        empleo.ciudad = request.POST.get('ciudad')
+        empleo.fecha_vencimiento = request.POST.get('fecha_vencimiento')
+        empleo.esta_activa = request.POST.get('esta_activa') == 'True' 
+        empleo.save()
+        return redirect('inicio_empresa')
+
+    return render(request, 'empresa/editar_empleo.html', {'empleo': empleo})
+
+def eliminar_empleo(request, id):
+    try:
+        usuario = Usuario.objects.get(id=request.session['usuario_id'], tipo_usuario='empresa')
+        empresa = Empresa.objects.get(usuario=usuario)
+        empleo = Publicarempleo.objects.get(id=id, empresa=empresa)
+        empleo.delete()
+    except (Usuario.DoesNotExist, Empresa.DoesNotExist, Publicarempleo.DoesNotExist):
+        return render(request, 'error.html', {'mensaje': 'No se pudo eliminar el empleo.'})
+
+    return redirect('inicio_empresa')
+
+def toggle_estado_empleo(request, id):
+    try:
+        usuario = Usuario.objects.get(id=request.session['usuario_id'], tipo_usuario='empresa')
+        empresa = Empresa.objects.get(usuario=usuario)
+        empleo = Publicarempleo.objects.get(id=id, empresa=empresa)
+        empleo.esta_activa = not empleo.esta_activa
+        empleo.save()
+    except (Usuario.DoesNotExist, Empresa.DoesNotExist, Publicarempleo.DoesNotExist):
+        return render(request, 'error.html', {'mensaje': 'No se pudo cambiar el estado del empleo.'})
+
+    return redirect('inicio_empresa')  # O la ruta donde se muestra la tabla

@@ -319,7 +319,7 @@
                                                             </div>
                                                         </td>
                                                         <td>{{ empleo.empresa.nombre_comercial }}</td>
-                                                        <td>{{ empleo.fecha_publicacion|date:"d/m/Y" }}</td>
+                                                        <td>{{ empleo.fecha_vencimiento|date:"d/m/Y" }}</td>
                                                         <td>
                                                             {% if empleo.esta_activa %}
                                                                 <span class="badge bg-success">Activa</span>
@@ -328,11 +328,21 @@
                                                             {% endif %}
                                                         </td>
                                                         <td>
-                                                            <a href="#" class="btn btn-sm btn-outline-primary me-1" title="Ver">
-                                                                <i class="fas fa-eye"></i>
+                                                            <a href="{% url 'editar_empleo' empleo.id %}" class="btn btn-sm btn-outline-warning me-1" title="Editar">
+                                                                <i class="fas fa-edit"></i>
                                                             </a>
-                                                            <a href="#" class="btn btn-sm btn-outline-secondary" title="Opciones">
-                                                                <i class="fas fa-ellipsis-v"></i>
+                                                            <a href="{% url 'eliminar_empleo' empleo.id %}" class="btn btn-sm btn-outline-danger" title="Eliminar"
+                                                            onclick="return confirm('¿Estás seguro de que deseas eliminar esta publicación?');">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </a>
+                                                            <a href="{% url 'toggle_estado_empleo' empleo.id %}" 
+                                                                class="btn btn-sm {% if empleo.esta_activa %}btn-success{% else %}btn-secondary{% endif %}" 
+                                                                title="Cambiar Estado">
+                                                                {% if empleo.esta_activa %}
+                                                                    <i class="fas fa-toggle-on"></i>
+                                                                {% else %}
+                                                                    <i class="fas fa-toggle-off"></i>
+                                                                {% endif %}
                                                             </a>
                                                         </td>
                                                     </tr>

@@ -17,4 +17,8 @@ urlpatterns = [
 
     # URL REGISTRAR EMPLEO
     path('registrar-empleo/', views.registrar_empleo, name='registrar_empleo'),
+    path('empleo/editar/<int:id>/', views.editar_empleo, name='editar_empleo'),
+    path('empleo/eliminar/<int:id>/', views.eliminar_empleo, name='eliminar_empleo'),
+    path('empleo/toggle-estado/<int:id>/', views.toggle_estado_empleo, name='toggle_estado_empleo'),
+
 ]
