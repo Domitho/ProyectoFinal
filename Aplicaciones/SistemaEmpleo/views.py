@@ -1,13 +1,12 @@
+from .models import Usuario, Buscador, Empresa, ActividadEconomica, Publicarempleo, Solicitarempleo, Notificacion
+from django.shortcuts import get_object_or_404, render, redirect
 from decimal import Decimal, InvalidOperation
+from django.core.mail import send_mail
+from django.contrib import messages
+from datetime import date, datetime
+from django.utils import timezone
 import random
 import string
-from django.shortcuts import get_object_or_404, render, redirect
-from django.core.mail import send_mail
-from .models import Usuario, Buscador, Empresa, ActividadEconomica, Publicarempleo, Solicitarempleo
-from django.utils import timezone
-import datetime
-from django.contrib import messages
-from datetime import date
 
 # Funciones para generar credenciales automáticas
 def generar_usuario(nombre, apellido):
@@ -143,6 +142,7 @@ def inicio_buscador(request):
         usuario = Usuario.objects.get(id=request.session['usuario_id'], tipo_usuario='buscador')
         buscador = Buscador.objects.get(usuario=usuario)
         solicitudes = Solicitarempleo.objects.filter(buscador=buscador)
+        empleos = Publicarempleo.objects.filter(esta_activa=True).order_by('-fecha_publicacion')
 
         total = solicitudes.count()
         activas = solicitudes.filter(esta_activa=True).count()
@@ -151,11 +151,13 @@ def inicio_buscador(request):
         context = {
             'usuario': usuario,
             'solicitudes': solicitudes,
+            'empleos': empleos, 
             'total': total,
             'activas': activas,
             'inactivas': inactivas
         }
         return render(request, 'buscador/inicio_buscador.html', context)
+
     except (Usuario.DoesNotExist, Buscador.DoesNotExist):
         return render(request, 'error.html', {'mensaje': 'Usuario no válido o no autorizado'})
 
@@ -365,3 +367,52 @@ def eliminar_solicitud(request, id):
         return redirect('dashboard_solicitudes')
 
     return render(request, 'buscador/confirmar_eliminar.html', {'solicitud': solicitud})
+
+## NOTIFICACIONES ##
+
+def aplicar_empleo(request, empleo_id):
+    try:
+        usuario_id = request.session.get('usuario_id')
+        usuario = Usuario.objects.get(id=usuario_id, tipo_usuario='buscador')
+        buscador = Buscador.objects.get(usuario=usuario)
+        empleo = Publicarempleo.objects.get(id=empleo_id)
+
+        # Verificar si ya aplicó antes a ese empleo
+        existe = Notificacion.objects.filter(buscador=buscador, empleo=empleo).exists()
+        if existe:
+            messages.info(request, 'Ya aplicaste a esta oferta anteriormente.')
+        else:
+            # Crear notificación
+            Notificacion.objects.create(
+                buscador=buscador,
+                empleo=empleo,
+                fecha_aplicacion=timezone.now(),
+                leido=False,
+                mensaje=f"{buscador.nombre} ha aplicado al empleo '{empleo.titulo}'"
+            )
+            messages.success(request, 'Has aplicado exitosamente.')
+
+    except (Usuario.DoesNotExist, Buscador.DoesNotExist, Publicarempleo.DoesNotExist):
+        messages.error(request, 'No se pudo procesar la aplicación.')
+
+    return redirect('inicio_buscador')
+
+# NOTIFICACION EMPRESA
+def notificaciones_empresa(request):
+    try:
+        usuario = Usuario.objects.get(id=request.session['usuario_id'], tipo_usuario='empresa')
+        empresa = Empresa.objects.get(usuario=usuario)
+
+        # Obtener todos los empleos de esta empresa
+        empleos = Publicarempleo.objects.filter(empresa=empresa)
+
+        # Obtener notificaciones relacionadas con esos empleos
+        notificaciones = Notificacion.objects.filter(empleo__in=empleos).select_related('buscador', 'empleo').order_by('-fecha_aplicacion')
+
+        return render(request, 'empresa/notificaciones.html', {
+            'usuario': usuario,
+            'notificaciones': notificaciones
+        })
+
+    except (Usuario.DoesNotExist, Empresa.DoesNotExist):
+        return render(request, 'error.html', {'mensaje': 'Acceso no autorizado'})

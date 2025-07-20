@@ -242,6 +242,7 @@ class Empresa(models.Model):
 class Notificacion(models.Model):
     buscador = models.ForeignKey(Buscador, models.DO_NOTHING)
     empleo = models.ForeignKey('Publicarempleo', models.DO_NOTHING)
+    solicitud = models.ForeignKey('Solicitarempleo', models.DO_NOTHING, null=True, blank=True)
     fecha_aplicacion = models.DateTimeField(blank=True, null=True)
     leido = models.BooleanField(blank=True, null=True)
     mensaje = models.TextField(blank=True, null=True)

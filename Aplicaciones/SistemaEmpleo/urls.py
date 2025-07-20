@@ -26,4 +26,8 @@ urlpatterns = [
     path('solicitudes/editar/<int:id>/', views.editar_solicitud, name='editar_solicitud'),
     path('solicitudes/eliminar/<int:id>/', views.eliminar_solicitud, name='eliminar_solicitud'),
 
+    # URL NOTIFICACIONES
+    path('aplicar-empleo/<int:empleo_id>/', views.aplicar_empleo, name='aplicar_empleo'),
+    path('empresa/notificaciones/', views.notificaciones_empresa, name='notificaciones_empresa'),
+
 ]

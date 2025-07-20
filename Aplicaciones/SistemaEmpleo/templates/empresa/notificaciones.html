@@ -1,0 +1,43 @@
+{% extends 'plantilla.html' %}
+
+{% block contenido %}
+<div class="container mt-4">
+    <h4>Notificaciones de Aplicaciones</h4>
+    <div class="card">
+        <div class="card-body table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Buscador</th>
+                        <th>Empleo</th>
+                        <th>Fecha de Aplicación</th>
+                        <th>Mensaje</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for notif in notificaciones %}
+                    <tr>
+                        <td>{{ notif.buscador.nombre }} {{ notif.buscador.apellido }}</td>
+                        <td>{{ notif.empleo.titulo }}</td>
+                        <td>{{ notif.fecha_aplicacion|date:"d/m/Y H:i" }}</td>
+                        <td>{{ notif.mensaje }}</td>
+                        <td>
+                            {% if notif.leido %}
+                                <span class="badge bg-secondary">Leído</span>
+                            {% else %}
+                                <span class="badge bg-primary">Nuevo</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">No hay aplicaciones aún.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
