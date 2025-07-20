@@ -44,9 +44,9 @@ def login_empresa(request):
             request.session['usuario_id'] = user.id  # Guardamos el usuario en sesión
             return redirect('inicio_empresa')
         except Usuario.DoesNotExist:
-            return render(request, 'login_empresa.html', {'error': 'Usuario o clave incorrectos'})
+            return render(request, 'empresa/login_empresa.html', {'error': 'Usuario o clave incorrectos'})
 
-    return render(request, 'login_empresa.html')
+    return render(request, 'empresa/login_empresa.html')
 
 # Registro de buscador
 def registro_buscador(request):
@@ -132,7 +132,7 @@ def registro_empresa(request):
 
         return redirect('login_empresa')
 
-    return render(request, 'registro_empresa.html', {'actividades': actividades})
+    return render(request, 'empresa/registro_empresa.html', {'actividades': actividades})
 
 # Inicio buscador
 def inicio_buscador(request):
@@ -164,7 +164,7 @@ def inicio_empresa(request):
         except (Usuario.DoesNotExist, Empresa.DoesNotExist):
             pass
 
-    return render(request, 'inicio_empresa.html', {
+    return render(request, 'empresa/inicio_empresa.html', {
         'usuario': usuario,
         'empleos': empleos,
         'total': total,
