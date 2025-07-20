@@ -65,6 +65,23 @@ class SistemaempleoUsuario(models.Model):
         db_table = 'SistemaEmpleo_usuario'
 
 
+class Solicitarempleo(models.Model):
+    buscador = models.ForeignKey('Buscador', models.DO_NOTHING)
+    cargo_deseado = models.CharField(max_length=100)
+    nivel_estudios = models.CharField(max_length=100)
+    experiencia_anios = models.IntegerField()
+    habilidades = models.TextField(blank=True, null=True)
+    cv = models.FileField(upload_to='cvs/', blank=True, null=True) 
+    disponibilidad = models.CharField(max_length=50, blank=True, null=True)
+    ubicacion = models.CharField(max_length=100, blank=True, null=True)
+    fecha_publicacion = models.DateField(blank=True, null=True)
+    esta_activa = models.BooleanField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'SolicitarEmpleo'
+
+
 class ActividadEconomica(models.Model):
     codigo = models.CharField(unique=True, max_length=10)
     nombre = models.CharField(max_length=100)
@@ -220,6 +237,18 @@ class Empresa(models.Model):
     class Meta:
         managed = False
         db_table = 'empresa'
+
+
+class Notificacion(models.Model):
+    buscador = models.ForeignKey(Buscador, models.DO_NOTHING)
+    empleo = models.ForeignKey('Publicarempleo', models.DO_NOTHING)
+    fecha_aplicacion = models.DateTimeField(blank=True, null=True)
+    leido = models.BooleanField(blank=True, null=True)
+    mensaje = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'notificacion'
 
 
 class Publicarempleo(models.Model):

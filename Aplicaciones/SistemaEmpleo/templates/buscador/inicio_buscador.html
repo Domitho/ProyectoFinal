@@ -105,7 +105,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login_buscador' %}"><i class="fas fa-search me-1"></i> Buscar
+                        <a class="nav-link" href="{% url 'registrar_solicitud' %}"><i class="fas fa-search me-1"></i> Buscar
                             Empleos</a>
                     </li>
                     <!--
@@ -191,14 +191,14 @@
         </div>
 
         <!-- Stats Cards -->
-        <div class="row mb-4">
+        <div class="row mb-4 justify-content-center">
             <div class="col-md-3">
                 <div class="card text-white bg-primary mb-3">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h6 class="card-title">Total Solicitudes</h6>
-                                <h2 class="card-text counter" data-target="42">0</h2>
+                                <h2 class="card-text counter" data-target="42">{{ total }}</h2>
                             </div>
                             <i class="fas fa-file-alt fa-3x"></i>
                         </div>
@@ -210,8 +210,8 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="card-title">En Proceso</h6>
-                                <h2 class="card-text">15</h2>
+                                <h6 class="card-title">Activas</h6>
+                                <h2 class="card-text">{{ activas }}</h2>
                             </div>
                             <i class="fas fa-tasks fa-3x"></i>
                         </div>
@@ -223,23 +223,10 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="card-title">Entrevistas</h6>
-                                <h2 class="card-text">8</h2>
+                                <h6 class="card-title">Inactivas</h6>
+                                <h2 class="card-text">{{ inactivas }}</h2>
                             </div>
                             <i class="fas fa-handshake fa-3x"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-white bg-danger mb-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="card-title">Urgentes</h6>
-                                <h2 class="card-text">3</h2>
-                            </div>
-                            <i class="fas fa-exclamation-triangle fa-3x"></i>
                         </div>
                     </div>
                 </div>
@@ -281,7 +268,7 @@
                                 <div><i class="fas fa-clock me-2"></i>Siguiente paso: Entrevista técnica</div>
                             </div>
                             <div class="col-md-3 text-end">
-                                <button class="btn btn-sm btn-outline-primary meIniciar sesión</div>
+                                <button class="btn btn-sm btn-outline-primary me">Iniciar sesión</div>
                             </div>
                         </div>
                     </div>
@@ -292,9 +279,9 @@
                                     <div class="card-header bg-white">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <h5 class="mb-0">Últimas solicitudes</h5>
-                                            <button class="btn btn-sm btn-outline-secondary">
-                                                <i class="fas fa-download me-1"></i>Exportar
-                                            </button>
+                                            <a class="btn btn-sm btn-outline-secondary" href="{% url 'registrar_solicitud' %}">
+                                                <i class="fas fa-add me-1"></i>Agregar
+                                            </a>
                                         </div>
                                     </div>
                                     <div class="card-body">
@@ -303,92 +290,45 @@
                                                 <thead>
                                                     <tr>
                                                         <th>Puesto</th>
-                                                        <th>Empresa</th>
-                                                        <th>Fecha</th>
+                                                        <th>Ubicacion</th>
+                                                        <th>Fecha Publicacion</th>
                                                         <th>Estado</th>
                                                         <th>Acciones</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    {% for solicitud in solicitudes %}
                                                     <tr>
                                                         <td>
                                                             <div class="d-flex align-items-center">
-                                                                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/063004f1-ff5b-4e63-8946-65fdf3d3c208.png"
-                                                                    alt="Logo de Innovatech con diseño minimalista en verde"
-                                                                    class="rounded me-2" width="30">
-                                                                <strong>Diseñador UX/UI</strong>
+                                                                <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                                                                    alt="CV icono" class="rounded me-2" width="30">
+                                                                <strong>{{ solicitud.cargo_deseado }}</strong>
                                                             </div>
                                                         </td>
-                                                        <td>Innovatech</td>
-                                                        <td>20/10/2023</td>
-                                                        <td><span class="badge bg-primary">En revisión</span></td>
+                                                        <td>{{ solicitud.ubicacion|default:"-" }}</td>
+                                                        <td>{{ solicitud.fecha_publicacion|date:"d/m/Y" }}</td>
                                                         <td>
-                                                            <button
-                                                                class="btn btn-sm btn-outline-primary me-1 btn-hover"
-                                                                data-bs-toggle="tooltip" title="Ver detalles">
-                                                                <i class="fas fa-eye"></i>
-                                                            </button>
-                                                            <button class="btn btn-sm btn-outline-secondary"><i
-                                                                    class="fas fa-ellipsis-v"></i></button>
+                                                            {% if solicitud.esta_activa %}
+                                                                <span class="badge bg-success">Activa</span>
+                                                            {% else %}
+                                                                <span class="badge bg-secondary">Inactiva</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            <a href="{% url 'editar_solicitud' solicitud.id %}" class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="tooltip" title="Editar">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+                                                            <a href="{% url 'eliminar_solicitud' solicitud.id %}" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Eliminar">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </a>
                                                         </td>
                                                     </tr>
+                                                    {% empty %}
                                                     <tr>
-                                                        <td>
-                                                            <div class="d-flex align-items-center">
-                                                                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/b38284a2-71c4-496d-9228-2675d9924e9c.png"
-                                                                    alt="Logo de DataWorld en tonos azules con símbolo de globo terráqueo"
-                                                                    class="rounded me-2" width="30">
-                                                                <strong>Analista de Datos</strong>
-                                                            </div>
-                                                        </td>
-                                                        <td>DataWorld</td>
-                                                        <td>18/10/2023</td>
-                                                        <td><span class="badge bg-warning">Entrevista</span></td>
-                                                        <td>
-                                                            <button class="btn btn-sm btn-outline-primary me-1"><i
-                                                                    class="fas fa-eye"></i></button>
-                                                            <button class="btn btn-sm btn-outline-secondary"><i
-                                                                    class="fas fa-ellipsis-v"></i></button>
-                                                        </td>
+                                                        <td colspan="5" class="text-center text-muted">No tienes solicitudes registradas.</td>
                                                     </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <div class="d-flex align-items-center">
-                                                                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/190bc78f-08eb-4f34-a2ff-705bf46d11da.png"
-                                                                    alt="Logo de CloudSys con diseño de nube en gradiente morado"
-                                                                    class="rounded me-2" width="30">
-                                                                <strong>Ingeniero DevOps</strong>
-                                                            </div>
-                                                        </td>
-                                                        <td>CloudSys</td>
-                                                        <td>15/10/2023</td>
-                                                        <td><span class="badge bg-success">Activa</span></td>
-                                                        <td>
-                                                            <button class="btn btn-sm btn-outline-primary me-1"><i
-                                                                    class="fas fa-eye"></i></button>
-                                                            <button class="btn btn-sm btn-outline-secondary"><i
-                                                                    class="fas fa-ellipsis-v"></i></button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <div class="d-flex align-items-center">
-                                                                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/572683e7-ba82-4f82-a93f-4592bf3fe5f9.png"
-                                                                    alt="Logo de MarketPro en rojo con ícono de gráfico ascendente"
-                                                                    class="rounded me-2" width="30">
-                                                                <strong>Especialista en Marketing</strong>
-                                                            </div>
-                                                        </td>
-                                                        <td>MarketPro</td>
-                                                        <td>12/10/2023</td>
-                                                        <td><span class="badge bg-danger">Urgente</span></td>
-                                                        <td>
-                                                            <button class="btn btn-sm btn-outline-primary me-1"><i
-                                                                    class="fas fa-eye"></i></button>
-                                                            <button class="btn btn-sm btn-outline-secondary"><i
-                                                                    class="fas fa-ellipsis-v"></i></button>
-                                                        </td>
-                                                    </tr>
+                                                    {% endfor %}
                                                 </tbody>
                                             </table>
                                         </div>

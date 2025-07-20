@@ -1,0 +1,91 @@
+{% extends 'plantilla.html' %}
+{% load static %}
+
+{% block contenido %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Editar Solicitud de Empleo</h4>
+        </div>
+        <div class="card-body">
+            <form id="editarForm" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label class="form-label">Cargo Deseado</label>
+                    <input type="text" name="cargo_deseado" class="form-control" value="{{ solicitud.cargo_deseado }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Nivel de Estudios</label>
+                    <input type="text" name="nivel_estudios" class="form-control" value="{{ solicitud.nivel_estudios }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Años de Experiencia</label>
+                    <input type="number" name="experiencia_anios" class="form-control" value="{{ solicitud.experiencia_anios }}" min="0" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Habilidades</label>
+                    <textarea name="habilidades" class="form-control" rows="3">{{ solicitud.habilidades }}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Ubicación</label>
+                    <input type="text" name="ubicacion" class="form-control" value="{{ solicitud.ubicacion }}">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Disponibilidad</label>
+                    <input type="text" name="disponibilidad" class="form-control" value="{{ solicitud.disponibilidad }}">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">CV (PDF)</label><br>
+                    {% if solicitud.cv %}
+                        <a href="{{ solicitud.cv.url }}" target="_blank" class="btn btn-sm btn-outline-secondary mb-2">
+                            Ver archivo actual
+                        </a>
+                    {% endif %}
+                    <input type="file" name="cv" class="form-control" accept=".pdf">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Estado de la Solicitud</label>
+                    <select name="esta_activa" class="form-select">
+                        <option value="True" {% if solicitud.esta_activa %}selected{% endif %}>Activa</option>
+                        <option value="False" {% if not solicitud.esta_activa %}selected{% endif %}>Inactiva</option>
+                    </select>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'inicio_buscador' %}" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#editarForm').validate({
+            rules: {
+                cargo_deseado: { required: true },
+                nivel_estudios: { required: true },
+                experiencia_anios: { required: true, number: true, min: 0 }
+            },
+            messages: {
+                cargo_deseado: "Este campo es obligatorio.",
+                nivel_estudios: "Este campo es obligatorio.",
+                experiencia_anios: "Ingrese un número válido de años."
+            },
+            errorClass: "text-danger"
+        });
+    });
+</script>
+{% endblock %}

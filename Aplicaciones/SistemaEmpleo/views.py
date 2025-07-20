@@ -1,10 +1,13 @@
 from decimal import Decimal, InvalidOperation
 import random
 import string
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.core.mail import send_mail
-from .models import Usuario, Buscador, Empresa, ActividadEconomica, Publicarempleo
+from .models import Usuario, Buscador, Empresa, ActividadEconomica, Publicarempleo, Solicitarempleo
 from django.utils import timezone
+import datetime
+from django.contrib import messages
+from datetime import date
 
 # Funciones para generar credenciales automáticas
 def generar_usuario(nombre, apellido):
@@ -136,14 +139,25 @@ def registro_empresa(request):
 
 # Inicio buscador
 def inicio_buscador(request):
-    usuario = None
-    if 'usuario_id' in request.session:
-        try:
-            usuario = Usuario.objects.get(id=request.session['usuario_id'])
-        except Usuario.DoesNotExist:
-            pass
-    return render(request, 'inicio_buscador.html', {'usuario': usuario})
+    try:
+        usuario = Usuario.objects.get(id=request.session['usuario_id'], tipo_usuario='buscador')
+        buscador = Buscador.objects.get(usuario=usuario)
+        solicitudes = Solicitarempleo.objects.filter(buscador=buscador)
 
+        total = solicitudes.count()
+        activas = solicitudes.filter(esta_activa=True).count()
+        inactivas = solicitudes.filter(esta_activa=False).count()
+
+        context = {
+            'usuario': usuario,
+            'solicitudes': solicitudes,
+            'total': total,
+            'activas': activas,
+            'inactivas': inactivas
+        }
+        return render(request, 'buscador/inicio_buscador.html', context)
+    except (Usuario.DoesNotExist, Buscador.DoesNotExist):
+        return render(request, 'error.html', {'mensaje': 'Usuario no válido o no autorizado'})
 
 # Inicio empresa
 def inicio_empresa(request):
@@ -274,3 +288,80 @@ def toggle_estado_empleo(request, id):
         return render(request, 'error.html', {'mensaje': 'No se pudo cambiar el estado del empleo.'})
 
     return redirect('inicio_empresa')  # O la ruta donde se muestra la tabla
+
+
+## ********* BUSCADOR ******** ##
+
+def registro_solicitud_empleo(request):
+    try:
+        usuario = Usuario.objects.get(id=request.session['usuario_id'], tipo_usuario='buscador')
+        buscador = Buscador.objects.get(usuario=usuario)
+    except (Usuario.DoesNotExist, Buscador.DoesNotExist):
+        messages.error(request, "Acceso no autorizado.")
+        return redirect('login_buscador')
+
+    if request.method == 'POST':
+        cargo_deseado = request.POST.get('cargo_deseado')
+        nivel_estudios = request.POST.get('nivel_estudios')
+        experiencia_anios = request.POST.get('experiencia_anios')
+        habilidades = request.POST.get('habilidades')
+        disponibilidad = request.POST.get('disponibilidad')
+        ubicacion = request.POST.get('ubicacion')
+        esta_activa = True if request.POST.get('esta_activa') == 'True' else False
+        cv_file = request.FILES.get('cv')
+
+        solicitud = Solicitarempleo(
+            buscador=buscador,
+            cargo_deseado=cargo_deseado,
+            nivel_estudios=nivel_estudios,
+            experiencia_anios=experiencia_anios or 0,
+            habilidades=habilidades,
+            disponibilidad=disponibilidad,
+            ubicacion=ubicacion,
+            fecha_publicacion=datetime.date.today(),
+            esta_activa=esta_activa
+        )
+
+        if cv_file:
+            solicitud.cv = cv_file
+
+        solicitud.save()
+        messages.success(request, "Tu solicitud fue publicada correctamente.")
+        return redirect('inicio_buscador')
+
+    return render(request, 'buscador/registro_solicitud.html')
+
+def editar_solicitud(request, id):
+    usuario_id = request.session.get('usuario_id')
+    buscador = get_object_or_404(Buscador, usuario_id=usuario_id)
+    solicitud = get_object_or_404(Solicitarempleo, id=id, buscador=buscador)
+
+    if request.method == 'POST':
+        solicitud.cargo_deseado = request.POST.get('cargo_deseado')
+        solicitud.nivel_estudios = request.POST.get('nivel_estudios')
+        solicitud.experiencia_anios = request.POST.get('experiencia_anios')
+        solicitud.habilidades = request.POST.get('habilidades')
+        solicitud.disponibilidad = request.POST.get('disponibilidad')
+        solicitud.ubicacion = request.POST.get('ubicacion')
+        solicitud.esta_activa = request.POST.get('esta_activa') == 'True'
+        solicitud.fecha_publicacion = date.today()
+
+        if request.FILES.get('cv'):
+            cv_file = request.FILES['cv']
+            solicitud.cv.save(cv_file.name, cv_file, save=True)
+
+        solicitud.save()
+        return redirect('inicio_buscador')
+
+    return render(request, 'buscador/editar_solicitud.html', {'solicitud': solicitud})
+
+def eliminar_solicitud(request, id):
+    usuario_id = request.session.get('usuario_id')
+    buscador = get_object_or_404(Buscador, usuario_id=usuario_id)
+    solicitud = get_object_or_404(Solicitarempleo, id=id, buscador=buscador)
+
+    if request.method == 'POST':
+        solicitud.delete()
+        return redirect('dashboard_solicitudes')
+
+    return render(request, 'buscador/confirmar_eliminar.html', {'solicitud': solicitud})
