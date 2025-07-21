@@ -19,6 +19,7 @@ def generar_contraseña():
 
 # Página de inicio
 def home(request):
+    messages.info(request, "Bienvenido al sistema de empleo.")
     return render(request, 'home.html')
 
 # Login para buscadores
@@ -29,10 +30,11 @@ def login_buscador(request):
 
         try:
             user = Usuario.objects.get(usuario=usuario, clave=clave, tipo_usuario='buscador')
-            request.session['usuario_id'] = user.id  # Guardamos el usuario en sesión
+            request.session['usuario_id'] = user.id 
+            messages.success(request, f"¡Bienvenido, {user.usuario}!")
             return redirect('inicio_buscador')
         except Usuario.DoesNotExist:
-            return render(request, 'login_buscador.html', {'error': 'Usuario o clave incorrectos'})
+            return render(request, 'buscador/login_buscador.html', {'error': 'Usuario o clave incorrectos'})
 
     return render(request, 'buscador/login_buscador.html')
 
@@ -45,7 +47,8 @@ def login_empresa(request):
 
         try:
             user = Usuario.objects.get(usuario=usuario, clave=clave, tipo_usuario='empresa')
-            request.session['usuario_id'] = user.id  # Guardamos el usuario en sesión
+            request.session['usuario_id'] = user.id  
+            messages.success(request, f"¡Bienvenido, {user.usuario}!")
             return redirect('inicio_empresa')
         except Usuario.DoesNotExist:
             return render(request, 'empresa/login_empresa.html', {'error': 'Usuario o clave incorrectos'})
@@ -85,6 +88,7 @@ def registro_buscador(request):
             fail_silently=False,
         )
 
+        messages.success(request, "Registro exitoso. Tus credenciales han sido enviadas al correo.")
         return redirect('login_buscador')
 
     return render(request, 'buscador/registro_buscador.html')
@@ -134,6 +138,7 @@ def registro_empresa(request):
             fail_silently=False,
         )
 
+        messages.success(request, "Registro exitoso. Tus credenciales han sido enviadas al correo.")
         return redirect('login_empresa')
 
     return render(request, 'empresa/registro_empresa.html', {'actividades': actividades})
@@ -193,6 +198,7 @@ def inicio_empresa(request):
 # CERRAR SESION
 def logout_usuario(request):
     request.session.flush()
+    messages.success(request, "Has cerrado sesión correctamente. ¡Hasta pronto!")
     return redirect('home')
 
 
@@ -231,7 +237,9 @@ def registrar_empleo(request):
             fecha_vencimiento=fecha_vencimiento,
             esta_activa=True
         )
-        return redirect('inicio_empresa')  # O una URL de listado que quieras
+
+        messages.success(request, "Empleo publicado correctamente.")
+        return redirect('inicio_empresa') 
 
     return render(request, 'empresa/registrar_empleo.html')
 
@@ -266,6 +274,7 @@ def editar_empleo(request, id):
             empleo.salario = None
 
         empleo.save()
+        messages.success(request, "Empleo actualizado correctamente.")        
         return redirect('inicio_empresa')
 
     return render(request, 'empresa/editar_empleo.html', {'empleo': empleo})
@@ -278,7 +287,8 @@ def eliminar_empleo(request, id):
         empleo.delete()
     except (Usuario.DoesNotExist, Empresa.DoesNotExist, Publicarempleo.DoesNotExist):
         return render(request, 'error.html', {'mensaje': 'No se pudo eliminar el empleo.'})
-
+    
+    messages.success(request, "Empleo eliminado correctamente.")
     return redirect('inicio_empresa')
 
 def toggle_estado_empleo(request, id):
@@ -291,7 +301,8 @@ def toggle_estado_empleo(request, id):
     except (Usuario.DoesNotExist, Empresa.DoesNotExist, Publicarempleo.DoesNotExist):
         return render(request, 'error.html', {'mensaje': 'No se pudo cambiar el estado del empleo.'})
 
-    return redirect('inicio_empresa')  # O la ruta donde se muestra la tabla
+    messages.success(request, "Estado del empleo actualizado correctamente.")
+    return redirect('inicio_empresa')  
 
 
 ## ********* BUSCADOR ******** ##
@@ -355,6 +366,7 @@ def editar_solicitud(request, id):
             solicitud.cv.save(cv_file.name, cv_file, save=True)
 
         solicitud.save()
+        messages.success(request, "Solicitud actualizada correctamente.")
         return redirect('inicio_buscador')
 
     return render(request, 'buscador/editar_solicitud.html', {'solicitud': solicitud})
@@ -368,6 +380,7 @@ def eliminar_solicitud(request, id):
     except (Usuario.DoesNotExist, Buscador.DoesNotExist, Solicitarempleo.DoesNotExist):
         return render(request, 'error.html', {'mensaje': 'No se pudo eliminar la solicitud.'})
 
+    messages.success(request, "Solicitud eliminada correctamente.")
     return redirect('inicio_buscador')
 
 ## NOTIFICACIONES ##
@@ -406,14 +419,13 @@ def notificaciones_empresa(request):
         usuario = Usuario.objects.get(id=request.session['usuario_id'], tipo_usuario='empresa')
         empresa = Empresa.objects.get(usuario=usuario)
 
-        # Obtener todos los empleos de esta empresa
         empleos = Publicarempleo.objects.filter(empresa=empresa)
 
-        # Obtener notificaciones relacionadas con esos empleos
         notificaciones = Notificacion.objects.filter(
             empleo__in=empleos
         ).select_related('buscador', 'empleo', 'solicitud').order_by('-fecha_aplicacion')
 
+        messages.info(request, "Estas son tus notificaciones más recientes.")
         return render(request, 'empresa/notificaciones.html', {
             'usuario': usuario,
             'notificaciones': notificaciones
@@ -449,6 +461,7 @@ def notificaciones_buscador(request):
 
         notificaciones = Notificacion.objects.filter(buscador=buscador).select_related('empleo').order_by('-fecha_aplicacion')
 
+        messages.info(request, "Estas son tus notificaciones más recientes.")
         return render(request, 'buscador/notificaciones.html', {
             'notificaciones': notificaciones
         })

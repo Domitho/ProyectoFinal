@@ -54,7 +54,7 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar sesión</a></li>
+                            <li><a class="dropdown-item" href="#" id="logout-link">Cerrar sesión</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -182,9 +182,15 @@
                                             <a href="{% url 'editar_solicitud' solicitud.id %}" class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="tooltip" title="Editar">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <a href="{% url 'eliminar_solicitud' solicitud.id %}" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Eliminar">
+                                            <!-- Botón que dispara SweetAlert -->
+                                            <button type="button" class="btn btn-sm btn-outline-danger btn-confirmar-eliminar" data-id="{{ solicitud.id }}" title="Eliminar">
                                                 <i class="fas fa-trash-alt"></i>
-                                            </a>
+                                            </button>
+
+                                            <!-- Formulario oculto para eliminación -->
+                                            <form id="form-eliminar-{{ solicitud.id }}" method="post" action="{% url 'eliminar_solicitud' solicitud.id %}" style="display: none;">
+                                                {% csrf_token %}
+                                            </form>
                                         </td>
                                     </tr>
                                     {% empty %}
@@ -348,6 +354,65 @@
             });
         </script>
     </div>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    {% if messages %}
+    <script>
+        {% for message in messages %}
+            Swal.fire({
+                title: '{{ message.tags|title }}',
+                text: '{{ message }}',
+                icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}info{% endif %}',
+                confirmButtonText: 'Aceptar',
+                timer: 3000
+            });
+        {% endfor %}
+    </script>
+    {% endif %}
+
+    <script>
+        document.getElementById('logout-link').addEventListener('click', function (e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: '¿Cerrar sesión?',
+                text: "¿Estás seguro de que deseas salir?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, salir',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{% url 'logout' %}";
+                }
+            });
+        });
+    </script>
+
+    <script>
+        document.querySelectorAll('.btn-confirmar-eliminar').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const id = this.getAttribute('data-id');
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: 'Esta acción eliminará la solicitud.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById(`form-eliminar-${id}`).submit();
+                    }
+                });
+            });
+        });
+    </script>
+
 </body>
 
 </html>

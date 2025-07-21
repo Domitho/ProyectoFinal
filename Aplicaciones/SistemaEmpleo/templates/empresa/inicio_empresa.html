@@ -55,7 +55,7 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar sesión</a></li>
+                            <li><a class="dropdown-item" href="#" id="logout-link">Cerrar sesión</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -207,10 +207,15 @@
                                                             <a href="{% url 'editar_empleo' empleo.id %}" class="btn btn-sm btn-outline-warning me-1" title="Editar">
                                                                 <i class="fas fa-edit"></i>
                                                             </a>
-                                                            <a href="{% url 'eliminar_empleo' empleo.id %}" class="btn btn-sm btn-outline-danger" title="Eliminar"
-                                                            onclick="return confirm('¿Estás seguro de que deseas eliminar esta publicación?');">
+                                                            <!-- Botón con SweetAlert2 -->
+                                                            <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar-empleo" data-id="{{ empleo.id }}" title="Eliminar">
                                                                 <i class="fas fa-trash-alt"></i>
-                                                            </a>
+                                                            </button>
+
+                                                            <!-- Formulario oculto para eliminar empleo -->
+                                                            <form id="form-eliminar-empleo-{{ empleo.id }}" method="post" action="{% url 'eliminar_empleo' empleo.id %}" style="display: none;">
+                                                                {% csrf_token %}
+                                                            </form>
                                                             <a href="{% url 'toggle_estado_empleo' empleo.id %}" 
                                                                 class="btn btn-sm {% if empleo.esta_activa %}btn-success{% else %}btn-secondary{% endif %}" 
                                                                 title="Cambiar Estado">
@@ -345,6 +350,67 @@
             </div>
         </div>
     </div>
+        <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    {% if messages %}
+    <script>
+        {% for message in messages %}
+            Swal.fire({
+                title: '{{ message.tags|title }}',
+                text: '{{ message }}',
+                icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}info{% endif %}',
+                confirmButtonText: 'Aceptar',
+                timer: 3000
+            });
+        {% endfor %}
+    </script>
+    {% endif %}
+
+    <script>
+        document.getElementById('logout-link').addEventListener('click', function (e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: '¿Cerrar sesión?',
+                text: "¿Estás seguro de que deseas salir?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, salir',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{% url 'logout' %}";
+                }
+            });
+        });
+    </script>
+
+    <script>
+        document.querySelectorAll('.btn-eliminar-empleo').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const id = this.getAttribute('data-id');
+                Swal.fire({
+                    title: '¿Eliminar publicación?',
+                    text: 'Esta acción no se puede deshacer.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById(`form-eliminar-empleo-${id}`).submit();
+                    }
+                });
+            });
+        });
+    </script>
+
+
 </body>
 
 </html>

@@ -27,7 +27,7 @@
         {% if perfil.logo %}
         <div class="mb-3">
             <label>Vista previa:</label><br>
-            <img src="{{ perfil.logo }}" alt="Logo" width="150" class="rounded shadow">
+            <img src="{{ perfil.logo.url }}" alt="Logo" width="150" class="rounded shadow">
         </div>
         {% endif %}
         <button type="submit" class="btn btn-primary">Guardar cambios</button>
