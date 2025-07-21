@@ -34,7 +34,7 @@ def login_buscador(request):
         except Usuario.DoesNotExist:
             return render(request, 'login_buscador.html', {'error': 'Usuario o clave incorrectos'})
 
-    return render(request, 'login_buscador.html')
+    return render(request, 'buscador/login_buscador.html')
 
 
 # Login para empresas
@@ -87,7 +87,7 @@ def registro_buscador(request):
 
         return redirect('login_buscador')
 
-    return render(request, 'registro_buscador.html')
+    return render(request, 'buscador/registro_buscador.html')
 
 # Registro de empresa
 def registro_empresa(request):
@@ -233,7 +233,7 @@ def registrar_empleo(request):
         )
         return redirect('inicio_empresa')  # O una URL de listado que quieras
 
-    return render(request, 'registrar_empleo.html')
+    return render(request, 'empresa/registrar_empleo.html')
 
 def editar_empleo(request, id):
     try:
@@ -360,15 +360,15 @@ def editar_solicitud(request, id):
     return render(request, 'buscador/editar_solicitud.html', {'solicitud': solicitud})
 
 def eliminar_solicitud(request, id):
-    usuario_id = request.session.get('usuario_id')
-    buscador = get_object_or_404(Buscador, usuario_id=usuario_id)
-    solicitud = get_object_or_404(Solicitarempleo, id=id, buscador=buscador)
-
-    if request.method == 'POST':
+    try:
+        usuario = Usuario.objects.get(id=request.session['usuario_id'], tipo_usuario='buscador')
+        buscador = Buscador.objects.get(usuario=usuario)
+        solicitud = Solicitarempleo.objects.get(id=id, buscador=buscador)
         solicitud.delete()
-        return redirect('dashboard_solicitudes')
+    except (Usuario.DoesNotExist, Buscador.DoesNotExist, Solicitarempleo.DoesNotExist):
+        return render(request, 'error.html', {'mensaje': 'No se pudo eliminar la solicitud.'})
 
-    return render(request, 'buscador/confirmar_eliminar.html', {'solicitud': solicitud})
+    return redirect('inicio_buscador')
 
 ## NOTIFICACIONES ##
 
