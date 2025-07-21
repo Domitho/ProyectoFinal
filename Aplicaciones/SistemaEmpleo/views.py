@@ -526,3 +526,36 @@ def ver_perfil_empresa(request):
 
     return render(request, 'empresa/ver_perfil.html', {'empresa': empresa, 'perfil': perfil})
 
+## ACTUALIZAR CREDENCIALES ##
+def actualizar_credenciales(request):
+    try:
+        usuario = Usuario.objects.get(id=request.session['usuario_id'])
+    except Usuario.DoesNotExist:
+        return render(request, 'error.html', {'mensaje': 'Usuario no válido'})
+
+    if request.method == 'POST':
+        nuevo_usuario = request.POST.get('usuario')
+        nueva_clave = request.POST.get('clave')
+
+        if not nuevo_usuario or not nueva_clave:
+            messages.error(request, 'Todos los campos son obligatorios.')
+            return redirect('actualizar_credenciales')
+
+        # Verificar que el nuevo nombre de usuario no exista en otro usuario
+        if Usuario.objects.filter(usuario=nuevo_usuario).exclude(id=usuario.id).exists():
+            messages.error(request, 'El nombre de usuario ya está en uso.')
+            return redirect('actualizar_credenciales')
+
+        usuario.usuario = nuevo_usuario
+        usuario.clave = nueva_clave
+        usuario.save()
+
+        messages.success(request, 'Credenciales actualizadas correctamente.')
+
+        # Redirección según tipo de usuario
+        if usuario.tipo_usuario == 'empresa':
+            return redirect('ver_perfil_empresa')
+        else:
+            return redirect('ver_perfil_buscador')
+
+    return render(request, 'actualizar_credenciales.html', {'usuario': usuario})

@@ -1,0 +1,44 @@
+{% extends 'plantilla3.html' %}
+
+{% block contenido %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-key me-2"></i>
+                {% if usuario.tipo_usuario == 'empresa' %}
+                    Actualizar credenciales de empresa
+                {% else %}
+                    Actualizar credenciales de buscador
+                {% endif %}
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="usuario" class="form-label">Nombre de usuario</label>
+                    <input type="text" class="form-control" id="usuario" name="usuario" value="{{ usuario.usuario }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="clave" class="form-label">Nueva contraseña</label>
+                    <input type="password" class="form-control" id="clave" name="clave" required>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    {% if usuario.tipo_usuario == 'empresa' %}
+                        <a href="{% url 'ver_perfil_empresa' %}" class="btn btn-secondary">Cancelar</a>
+                    {% else %}
+                        <a href="{% url 'ver_perfil_buscador' %}" class="btn btn-secondary">Cancelar</a>
+                    {% endif %}
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save me-1"></i> Guardar cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

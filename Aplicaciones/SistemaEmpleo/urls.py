@@ -38,5 +38,9 @@ urlpatterns = [
     path('buscador/perfil/ver/', views.ver_perfil_buscador, name='ver_perfil_buscador'),
     path('empresa/perfil/ver/', views.ver_perfil_empresa, name='ver_perfil_empresa'),
 
+    # CREDENCIALES
+    path('actualizar-credenciales/', views.actualizar_credenciales, name='actualizar_credenciales'),
+
+
 
 ]
