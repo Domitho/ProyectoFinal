@@ -8,7 +8,7 @@
                 <h4>Registro Empresa</h4>
             </div>
             <div class="card-body">
-                <form method="POST">
+                <form method="POST" id="registroEmpresaForm">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="cedula" class="form-label">Cédula</label>
@@ -66,4 +66,5 @@
         </div>
     </div>
 </div>
+
 {% endblock %}

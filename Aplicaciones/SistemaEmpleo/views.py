@@ -80,6 +80,7 @@ def registro_buscador(request):
             correo=correo
         )
 
+        messages.success(request, "Registro exitoso. Tus credenciales seran enviadas al correo.")
         send_mail(
             'Registro exitoso - Sistema de Empleo',
             f'Bienvenido {nombre}, tus credenciales son:\nUsuario: {usuario_gen}\nContraseña: {clave_gen}',
@@ -88,7 +89,6 @@ def registro_buscador(request):
             fail_silently=False,
         )
 
-        messages.success(request, "Registro exitoso. Tus credenciales han sido enviadas al correo.")
         return redirect('login_buscador')
 
     return render(request, 'buscador/registro_buscador.html')
@@ -130,6 +130,7 @@ def registro_empresa(request):
             celular=celular
         )
 
+        messages.success(request, "Registro exitoso. Tus credenciales seran enviadas al correo.")
         send_mail(
             'Registro exitoso - Sistema de Empleo',
             f'Bienvenido {nombre_comercial}, tus credenciales son:\nUsuario: {usuario_gen}\nContraseña: {clave_gen}',
@@ -138,7 +139,6 @@ def registro_empresa(request):
             fail_silently=False,
         )
 
-        messages.success(request, "Registro exitoso. Tus credenciales han sido enviadas al correo.")
         return redirect('login_empresa')
 
     return render(request, 'empresa/registro_empresa.html', {'actividades': actividades})
