@@ -1,0 +1,36 @@
+{% extends 'empresa/plantillaEmpresa.html' %}
+{% block contenido %}
+<div class="container mt-4">
+    <h4>Perfil Corporativo</h4>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label>Descripción de la empresa</label>
+            <textarea name="descripcion" class="form-control" rows="4">{{ perfil.descripcion }}</textarea>
+        </div>
+        <div class="mb-3">
+            <label>Sitio web</label>
+            <input type="url" name="sitio_web" class="form-control" value="{{ perfil.sitio_web }}">
+        </div>
+        <div class="mb-3">
+            <label>Facebook</label>
+            <input type="url" name="facebook" class="form-control" value="{{ perfil.facebook }}">
+        </div>
+        <div class="mb-3">
+            <label>LinkedIn</label>
+            <input type="url" name="linkedin" class="form-control" value="{{ perfil.linkedin }}">
+        </div>
+        <div class="mb-3">
+            <label>Logo de empresa</label>
+            <input type="file" name="logo" class="form-control">
+        </div>
+        {% if perfil.logo %}
+        <div class="mb-3">
+            <label>Vista previa:</label><br>
+            <img src="{{ perfil.logo }}" alt="Logo" width="150" class="rounded shadow">
+        </div>
+        {% endif %}
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+    </form>
+</div>
+{% endblock %}

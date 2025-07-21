@@ -32,5 +32,11 @@ urlpatterns = [
     path('empresa/notificacion/<int:notificacion_id>/<str:accion>/', views.responder_solicitud, name='responder_solicitud'),
     path('buscador/notificaciones/', views.notificaciones_buscador, name='notificaciones_buscador'),
 
+    # PERFILES
+    path('buscador/perfil/extendido/', views.editar_perfil_buscador, name='editar_perfil_buscador'),
+    path('empresa/perfil/extendido/', views.editar_perfil_empresa, name='editar_perfil_empresa'),
+    path('buscador/perfil/ver/', views.ver_perfil_buscador, name='ver_perfil_buscador'),
+    path('empresa/perfil/ver/', views.ver_perfil_empresa, name='ver_perfil_empresa'),
+
 
 ]

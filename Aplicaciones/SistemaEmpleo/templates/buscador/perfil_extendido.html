@@ -1,0 +1,32 @@
+{% extends 'buscador/plantillaBuscador.html' %}
+{% block contenido %}
+<div class="container mt-4">
+    <h4>Perfil Profesional</h4>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label>Biografía</label>
+            <textarea name="biografia" class="form-control" rows="4">{{ perfil.biografia }}</textarea>
+        </div>
+        <div class="mb-3">
+            <label>Habilidades destacadas</label>
+            <textarea name="habilidades_destacadas" class="form-control">{{ perfil.habilidades_destacadas }}</textarea>
+        </div>
+        <div class="mb-3">
+            <label>Portafolio web</label>
+            <input type="url" name="portafolio_web" class="form-control" value="{{ perfil.portafolio_web }}">
+        </div>
+        <div class="mb-3">
+            <label>Foto de perfil</label>
+            <input type="file" name="foto" class="form-control">
+        </div>
+        {% if perfil.foto %}
+        <div class="mb-3">
+            <label>Vista previa:</label><br>
+            <img src="{{ perfil.foto.url }}" alt="Foto" width="150" class="rounded shadow">
+        </div>
+        {% endif %}
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+    </form>
+</div>
+{% endblock %}

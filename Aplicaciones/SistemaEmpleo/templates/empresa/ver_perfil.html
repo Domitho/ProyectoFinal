@@ -1,0 +1,52 @@
+{% extends 'empresa/plantillaEmpresa.html' %}
+{% block contenido %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="d-flex align-items-center mb-3">
+                {% if perfil and perfil.logo %}
+                    <img src="{{ perfil.logo.url }}" alt="Logo" class="rounded me-3" width="100">
+                {% else %}
+                    <img src="https://via.placeholder.com/100" class="rounded me-3" alt="Logo">
+                {% endif %}
+                <div>
+                    <h4>{{ empresa.nombre_comercial }}</h4>
+                    <p class="text-muted">{{ empresa.correo }}</p>
+                </div>
+            </div>
+            <hr>
+            {% if perfil %}
+                <p><strong>Descripción:</strong><br> {{ perfil.descripcion|default:"(Sin descripción)" }}</p>
+                <p><strong>Sitio web:</strong>
+                    {% if perfil.sitio_web %}
+                        <a href="{{ perfil.sitio_web }}" target="_blank">{{ perfil.sitio_web }}</a>
+                    {% else %}
+                        <span class="text-muted">(No disponible)</span>
+                    {% endif %}
+                </p>
+                <p>
+                    <strong>Redes sociales:</strong><br>
+                    Facebook:
+                    {% if perfil.facebook %}
+                        <a href="{{ perfil.facebook }}" target="_blank">{{ perfil.facebook }}</a>
+                    {% else %}
+                        <span class="text-muted">(N/A)</span>
+                    {% endif %}<br>
+                    LinkedIn:
+                    {% if perfil.linkedin %}
+                        <a href="{{ perfil.linkedin }}" target="_blank">{{ perfil.linkedin }}</a>
+                    {% else %}
+                        <span class="text-muted">(N/A)</span>
+                    {% endif %}
+                </p>
+            {% else %}
+                <p class="text-muted">No has completado el perfil empresarial.</p>
+            {% endif %}
+        </div>
+    </div>
+    <a href="{% url 'editar_perfil_empresa' %}" class="btn btn-outline-primary mt-3">
+        <i class="fas fa-edit"></i> Editar perfil
+    </a>
+
+</div>
+{% endblock %}

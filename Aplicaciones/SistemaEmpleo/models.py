@@ -252,6 +252,29 @@ class Notificacion(models.Model):
         managed = False
         db_table = 'notificacion'
 
+class Perfilbuscador(models.Model):
+    buscador = models.OneToOneField(Buscador, models.DO_NOTHING)
+    biografia = models.TextField(blank=True, null=True)
+    foto = models.ImageField(upload_to='fotos_buscadores/', blank=True, null=True)
+    habilidades_destacadas = models.TextField(blank=True, null=True)
+    portafolio_web = models.CharField(max_length=200, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'perfilbuscador'
+
+
+class Perfilempresa(models.Model):
+    empresa = models.OneToOneField(Empresa, models.DO_NOTHING)
+    descripcion = models.TextField(blank=True, null=True)
+    logo = models.ImageField(upload_to='logos_empresas/', blank=True, null=True)
+    sitio_web = models.CharField(max_length=200, blank=True, null=True)
+    facebook = models.CharField(max_length=200, blank=True, null=True)
+    linkedin = models.CharField(max_length=200, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'perfilempresa'
 
 class Publicarempleo(models.Model):
     empresa = models.ForeignKey(Empresa, models.DO_NOTHING)

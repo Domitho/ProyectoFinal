@@ -1,4 +1,5 @@
-from .models import Usuario, Buscador, Empresa, ActividadEconomica, Publicarempleo, Solicitarempleo, Notificacion
+from ProyectoFinal import settings
+from .models import Perfilbuscador, Perfilempresa, Usuario, Buscador, Empresa, ActividadEconomica, Publicarempleo, Solicitarempleo, Notificacion
 from django.shortcuts import get_object_or_404, render, redirect
 from decimal import Decimal, InvalidOperation
 from django.core.mail import send_mail
@@ -453,3 +454,75 @@ def notificaciones_buscador(request):
         })
     except (Usuario.DoesNotExist, Buscador.DoesNotExist):
         return render(request, 'error.html', {'mensaje': 'Acceso no autorizado'})
+
+## PERIFL BUSCADOR ##
+
+def editar_perfil_buscador(request):
+    try:
+        usuario = Usuario.objects.get(id=request.session['usuario_id'], tipo_usuario='buscador')
+        buscador = Buscador.objects.get(usuario=usuario)
+        perfil, _ = Perfilbuscador.objects.get_or_create(buscador=buscador)
+    except (Usuario.DoesNotExist, Buscador.DoesNotExist):
+        return render(request, 'error.html', {'mensaje': 'Acceso no autorizado'})
+
+    if request.method == 'POST':
+        perfil.biografia = request.POST.get('biografia')
+        perfil.habilidades_destacadas = request.POST.get('habilidades_destacadas')
+        perfil.portafolio_web = request.POST.get('portafolio_web')
+
+        if 'foto' in request.FILES:
+            perfil.foto = request.FILES['foto']  
+
+        perfil.save()
+        messages.success(request, "Perfil actualizado correctamente.")
+        return redirect('ver_perfil_buscador')
+
+    return render(request, 'buscador/perfil_extendido.html', {'perfil': perfil})
+
+
+def ver_perfil_buscador(request):
+    try:
+        usuario = Usuario.objects.get(id=request.session['usuario_id'], tipo_usuario='buscador')
+        buscador = Buscador.objects.get(usuario=usuario)
+        perfil = Perfilbuscador.objects.filter(buscador=buscador).first()
+    except (Usuario.DoesNotExist, Buscador.DoesNotExist):
+        return render(request, 'error.html', {'mensaje': 'Acceso no autorizado'})
+
+    return render(request, 'buscador/ver_perfil.html', {'buscador': buscador, 'perfil': perfil})
+
+
+## PERFIL EMPRESA ##
+
+def editar_perfil_empresa(request):
+    try:
+        usuario = Usuario.objects.get(id=request.session['usuario_id'], tipo_usuario='empresa')
+        empresa = Empresa.objects.get(usuario=usuario)
+        perfil, _ = Perfilempresa.objects.get_or_create(empresa=empresa)
+    except (Usuario.DoesNotExist, Empresa.DoesNotExist):
+        return render(request, 'error.html', {'mensaje': 'Acceso no autorizado'})
+
+    if request.method == 'POST':
+        perfil.descripcion = request.POST.get('descripcion')
+        perfil.sitio_web = request.POST.get('sitio_web')
+        perfil.facebook = request.POST.get('facebook')
+        perfil.linkedin = request.POST.get('linkedin')
+
+        if 'logo' in request.FILES:
+            perfil.logo = request.FILES['logo'] 
+
+        perfil.save()
+        messages.success(request, "Perfil actualizado correctamente.")
+        return redirect('ver_perfil_empresa')
+
+    return render(request, 'empresa/perfil_extendido.html', {'perfil': perfil})
+
+def ver_perfil_empresa(request):
+    try:
+        usuario = Usuario.objects.get(id=request.session['usuario_id'], tipo_usuario='empresa')
+        empresa = Empresa.objects.get(usuario=usuario)
+        perfil = Perfilempresa.objects.filter(empresa=empresa).first()
+    except (Usuario.DoesNotExist, Empresa.DoesNotExist):
+        return render(request, 'error.html', {'mensaje': 'Acceso no autorizado'})
+
+    return render(request, 'empresa/ver_perfil.html', {'empresa': empresa, 'perfil': perfil})
+
