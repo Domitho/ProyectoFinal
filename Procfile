@@ -1,1 +1,1 @@
-web: gunicorn SistemaEmpleo.wsgi 
+web: gunicorn ProyectoFinal.wsgi 
