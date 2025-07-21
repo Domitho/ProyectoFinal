@@ -1,6 +1,6 @@
-{% extends 'plantilla.html' %}
-
+{% extends 'empresa/plantillaEmpresa.html' %}
 {% block contenido %}
+
 <div class="container mt-4">
     <h4>Notificaciones de Aplicaciones</h4>
     <div class="card">
@@ -18,15 +18,50 @@
                 <tbody>
                     {% for notif in notificaciones %}
                     <tr>
-                        <td>{{ notif.buscador.nombre }} {{ notif.buscador.apellido }}</td>
+                        <td>
+                            <strong>{{ notif.buscador.nombre }} {{ notif.buscador.apellido }}</strong><br>
+                            <small>{{ notif.buscador.correo }}</small><br>
+                            {% if notif.solicitud %}
+                                <div class="mt-1">
+                                    <span class="text-muted">Cargo: {{ notif.solicitud.cargo_deseado }}</span><br>
+                                    <span class="text-muted">Experiencia: {{ notif.solicitud.experiencia_anios }} años</span><br>
+                                    <span class="text-muted">Estudios: {{ notif.solicitud.nivel_estudios }}</span><br>
+                                    <span class="text-muted">Ubicación: {{ notif.solicitud.ubicacion }}</span><br>
+                                    <span class="text-muted">Disponibilidad: {{ notif.solicitud.disponibilidad }}</span><br>
+                                    {% if notif.solicitud %}
+                                        <p><strong>Cargo:</strong> {{ notif.solicitud.cargo_deseado }}</p>
+                                        <p><strong>CV:</strong> 
+                                            {% if notif.solicitud.cv %}
+                                                <a href="{{ notif.solicitud.cv.url }}" target="_blank">Descargar</a>
+                                            {% else %}
+                                                No adjunto
+                                            {% endif %}
+                                        </p>
+                                    {% else %}
+                                        <p class="text-muted">No hay solicitud asociada.</p>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <em class="text-muted">Sin solicitud asociada</em>
+                            {% endif %}
+                        </td>
                         <td>{{ notif.empleo.titulo }}</td>
                         <td>{{ notif.fecha_aplicacion|date:"d/m/Y H:i" }}</td>
                         <td>{{ notif.mensaje }}</td>
                         <td>
-                            {% if notif.leido %}
-                                <span class="badge bg-secondary">Leído</span>
+                            {% if notif.respuesta %}
+                                {% if notif.respuesta == 'aceptada' %}
+                                    <span class="badge bg-success">Aceptada</span>
+                                {% elif notif.respuesta == 'rechazada' %}
+                                    <span class="badge bg-danger">Rechazada</span>
+                                {% endif %}
                             {% else %}
-                                <span class="badge bg-primary">Nuevo</span>
+                                <a href="{% url 'responder_solicitud' notif.id 'aceptar' %}" class="btn btn-sm btn-success me-1">
+                                    <i class="fas fa-check"></i> Aceptar
+                                </a>
+                                <a href="{% url 'responder_solicitud' notif.id 'rechazar' %}" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-times"></i> Rechazar
+                                </a>
                             {% endif %}
                         </td>
                     </tr>

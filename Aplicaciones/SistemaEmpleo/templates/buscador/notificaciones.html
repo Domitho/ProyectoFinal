@@ -1,0 +1,42 @@
+{% extends 'buscador/plantillaBuscador.html' %}
+{% block contenido %}
+<div class="container mt-4">
+    <h4>Respuestas a tus postulaciones</h4>
+    <div class="card">
+        <div class="card-body table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Empleo</th>
+                        <th>Empresa</th>
+                        <th>Fecha de Postulación</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for notif in notificaciones %}
+                    <tr>
+                        <td>{{ notif.empleo.titulo }}</td>
+                        <td>{{ notif.empleo.empresa.nombre_comercial }}</td>
+                        <td>{{ notif.fecha_aplicacion|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            {% if notif.respuesta == 'aceptada' %}
+                                <span class="badge bg-success">Aceptada</span>
+                            {% elif notif.respuesta == 'rechazada' %}
+                                <span class="badge bg-danger">Rechazada</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Sin respuesta</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">No tienes postulaciones aún.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

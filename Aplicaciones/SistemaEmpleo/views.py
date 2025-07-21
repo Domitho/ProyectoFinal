@@ -3,7 +3,8 @@ from django.shortcuts import get_object_or_404, render, redirect
 from decimal import Decimal, InvalidOperation
 from django.core.mail import send_mail
 from django.contrib import messages
-from datetime import date, datetime
+from datetime import date
+import datetime
 from django.utils import timezone
 import random
 import string
@@ -377,15 +378,16 @@ def aplicar_empleo(request, empleo_id):
         buscador = Buscador.objects.get(usuario=usuario)
         empleo = Publicarempleo.objects.get(id=empleo_id)
 
-        # Verificar si ya aplicó antes a ese empleo
-        existe = Notificacion.objects.filter(buscador=buscador, empleo=empleo).exists()
-        if existe:
+        # Obtener la solicitud activa más reciente del buscador
+        solicitud = Solicitarempleo.objects.filter(buscador=buscador, esta_activa=True).order_by('-fecha_publicacion').first()
+
+        if Notificacion.objects.filter(buscador=buscador, empleo=empleo).exists():
             messages.info(request, 'Ya aplicaste a esta oferta anteriormente.')
         else:
-            # Crear notificación
             Notificacion.objects.create(
                 buscador=buscador,
                 empleo=empleo,
+                solicitud=solicitud,
                 fecha_aplicacion=timezone.now(),
                 leido=False,
                 mensaje=f"{buscador.nombre} ha aplicado al empleo '{empleo.titulo}'"
@@ -407,7 +409,9 @@ def notificaciones_empresa(request):
         empleos = Publicarempleo.objects.filter(empresa=empresa)
 
         # Obtener notificaciones relacionadas con esos empleos
-        notificaciones = Notificacion.objects.filter(empleo__in=empleos).select_related('buscador', 'empleo').order_by('-fecha_aplicacion')
+        notificaciones = Notificacion.objects.filter(
+            empleo__in=empleos
+        ).select_related('buscador', 'empleo', 'solicitud').order_by('-fecha_aplicacion')
 
         return render(request, 'empresa/notificaciones.html', {
             'usuario': usuario,
@@ -415,4 +419,37 @@ def notificaciones_empresa(request):
         })
 
     except (Usuario.DoesNotExist, Empresa.DoesNotExist):
+        return render(request, 'error.html', {'mensaje': 'Acceso no autorizado'})
+
+def responder_solicitud(request, notificacion_id, accion):
+    try:
+        usuario = Usuario.objects.get(id=request.session['usuario_id'], tipo_usuario='empresa')
+        notificacion = Notificacion.objects.get(id=notificacion_id, empleo__empresa__usuario=usuario)
+
+        if accion == 'aceptar':
+            notificacion.respuesta = 'aceptada'
+        elif accion == 'rechazar':
+            notificacion.respuesta = 'rechazada'
+        notificacion.leido = False  # para que el buscador lo vea como nuevo
+        notificacion.save()
+        messages.success(request, f'Solicitud {accion} correctamente.')
+    except Notificacion.DoesNotExist:
+        messages.error(request, 'No se pudo procesar la solicitud.')
+
+    return redirect('notificaciones_empresa')
+
+
+## NOTIFICACIONES BUSCADOR ##
+
+def notificaciones_buscador(request):
+    try:
+        usuario = Usuario.objects.get(id=request.session['usuario_id'], tipo_usuario='buscador')
+        buscador = Buscador.objects.get(usuario=usuario)
+
+        notificaciones = Notificacion.objects.filter(buscador=buscador).select_related('empleo').order_by('-fecha_aplicacion')
+
+        return render(request, 'buscador/notificaciones.html', {
+            'notificaciones': notificaciones
+        })
+    except (Usuario.DoesNotExist, Buscador.DoesNotExist):
         return render(request, 'error.html', {'mensaje': 'Acceso no autorizado'})

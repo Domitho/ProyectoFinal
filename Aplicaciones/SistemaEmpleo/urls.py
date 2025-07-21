@@ -29,5 +29,8 @@ urlpatterns = [
     # URL NOTIFICACIONES
     path('aplicar-empleo/<int:empleo_id>/', views.aplicar_empleo, name='aplicar_empleo'),
     path('empresa/notificaciones/', views.notificaciones_empresa, name='notificaciones_empresa'),
+    path('empresa/notificacion/<int:notificacion_id>/<str:accion>/', views.responder_solicitud, name='responder_solicitud'),
+    path('buscador/notificaciones/', views.notificaciones_buscador, name='notificaciones_buscador'),
+
 
 ]

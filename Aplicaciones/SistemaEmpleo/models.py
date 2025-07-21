@@ -246,6 +246,7 @@ class Notificacion(models.Model):
     fecha_aplicacion = models.DateTimeField(blank=True, null=True)
     leido = models.BooleanField(blank=True, null=True)
     mensaje = models.TextField(blank=True, null=True)
+    respuesta = models.CharField(max_length=20, null=True, blank=True)
 
     class Meta:
         managed = False
